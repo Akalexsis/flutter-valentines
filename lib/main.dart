@@ -10,7 +10,13 @@ class ValentineApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const ValentineHome(),
-      theme: ThemeData(useMaterial3: true),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.pink,
+          brightness: Brightness.light
+          ),
+        useMaterial3: true
+        ),
     );
   }
 }
@@ -26,11 +32,16 @@ class _ValentineHomeState extends State<ValentineHome> {
   final List<String> emojiOptions = ['Sweet Heart', 'Party Heart'];
   String selectedEmoji = 'Sweet Heart';
 
+  // variable tracks if animation is active or not
+  bool isAnimated = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Cupid\'s Canvas')),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 16),
           // creates dropdown menu of emojis (based on emojiOptions var)
@@ -42,14 +53,37 @@ class _ValentineHomeState extends State<ValentineHome> {
             onChanged: (value) => setState(() => selectedEmoji = value ?? selectedEmoji),
           ),
           const SizedBox(height: 16),
-          Expanded(
-            child: Center(
-              child: CustomPaint(
-                size: const Size(300, 300),
-                painter: HeartEmojiPainter(type: selectedEmoji),
+          // wrap Expanded in animated containerto animate heart
+          AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            width: isAnimated ? 200 : 100, // change height and width depending on if heart is animated
+            height: isAnimated ? 200 : 100,
+            child: // this is what needs to be animated
+            Expanded(
+                child: Center(
+                  child: CustomPaint(
+                    size: const Size(300, 300),
+                    painter: HeartEmojiPainter(type: selectedEmoji),
+                  ),
+                ),
               ),
             ),
-          ),
+          // change the state of the heart when button is clicked
+          ElevatedButton(
+            onPressed: (){
+              setState(() { isAnimated = true; }); // change the value of animated variable to initialize animation
+              
+              // revert to original size to give pulse effect
+              Future.delayed(Duration(milliseconds: 500), () {
+                setState(() { isAnimated = false; });
+              });
+            }, 
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.pink,
+              foregroundColor: Colors.white
+            ),
+            child: Text("Pulse Heart")
+            )
         ],
       ),
     );
