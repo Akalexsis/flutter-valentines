@@ -66,32 +66,35 @@ class _ValentineHomeState extends State<ValentineHome>
 
           const SizedBox(height: 8),
 
-          // wrap custom paint to select and pulse drawing
           AnimatedScale(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             scale: isAnimated ? 1.5 : 1.0,
-            child:  
-              CustomPaint(
-                    size: const Size(300, 300),
-                    painter: HeartEmojiPainter(type: selectedEmoji),
-                  ),
+            child: CustomPaint(
+              size: const Size(300, 220),
+              painter: HeartEmojiPainter(type: selectedEmoji),
             ),
-          // change the state of the heart when button is clicked
+          ),
+
           ElevatedButton(
-            onPressed: (){
-              setState(() { isAnimated = true; }); // change the value of animated variable to initialize animation
-              
-              // revert to original size to give pulse effect
-              Future.delayed(Duration(milliseconds: 500), () {
-                setState(() { isAnimated = false; });
+            onPressed: () {
+              setState(() {
+                isAnimated = true;
               });
-            }, 
+
+              Future.delayed(const Duration(milliseconds: 500), () {
+                setState(() {
+                  isAnimated = false;
+                });
+              });
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.pink,
-              foregroundColor: Colors.white
+              foregroundColor: Colors.white,
             ),
-            child: Text("Pulse Heart")
-            ),
+            child: const Text("Pulse Heart"),
+          ),
+
+          const SizedBox(height: 8),
 
           // PART 2: Celebration / Enhanced Visual Effects
           FilledButton.icon(
@@ -127,6 +130,73 @@ class _ValentineHomeState extends State<ValentineHome>
       ),
     );
   }
+}
+
+class HeartEmojiPainter extends CustomPainter {
+  HeartEmojiPainter({required this.type});
+  final String type;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+
+    final heartPath = Path()
+      ..moveTo(center.dx, center.dy + 55)
+      ..cubicTo(center.dx + 95, center.dy - 5,
+          center.dx + 55, center.dy - 105, center.dx, center.dy - 35)
+      ..cubicTo(center.dx - 55, center.dy - 105,
+          center.dx - 95, center.dy - 5, center.dx, center.dy + 55)
+      ..close();
+
+    Paint heartPaint;
+
+    if (type == 'Party Heart') {
+      heartPaint = Paint()
+        ..shader = const LinearGradient(
+          colors: [
+            Color(0xFFFF7AB5),
+            Color(0xFFFF2D8D),
+            Color(0xFF7C4DFF),
+          ],
+        ).createShader(
+          Rect.fromCenter(center: center, width: 220, height: 220),
+        );
+    } else {
+      heartPaint = Paint()
+        ..shader = const LinearGradient(
+          colors: [
+            Color(0xFFFF7AB5),
+            Color(0xFFFF2D8D),
+            Color(0xFF8A0030),
+          ],
+        ).createShader(
+          Rect.fromCenter(center: center, width: 220, height: 220),
+        );
+    }
+
+    canvas.drawPath(heartPath, heartPaint);
+
+    final eyePaint = Paint()..color = Colors.white;
+    canvas.drawCircle(Offset(center.dx - 22, center.dy - 10), 7, eyePaint);
+    canvas.drawCircle(Offset(center.dx + 22, center.dy - 10), 7, eyePaint);
+
+    final mouthPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: Offset(center.dx, center.dy + 18), radius: 20),
+      0,
+      pi,
+      false,
+      mouthPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant HeartEmojiPainter oldDelegate) =>
+      oldDelegate.type != type;
 }
 
 class ValentineScenePainter extends CustomPainter {
@@ -214,8 +284,7 @@ class ValentineScenePainter extends CustomPainter {
       mouthPaint,
     );
 
-    final sparklePaint = Paint()
-      ..color = Colors.white.withOpacity(0.6);
+    final sparklePaint = Paint()..color = Colors.white.withOpacity(0.6);
 
     for (int i = 0; i < 10; i++) {
       final angle = (i * 2 * pi / 10) + t * 2 * pi;
