@@ -53,20 +53,23 @@ class _ValentineHomeState extends State<ValentineHome> {
             onChanged: (value) => setState(() => selectedEmoji = value ?? selectedEmoji),
           ),
           const SizedBox(height: 16),
-          // wrap Expanded in animated containerto animate heart
-          AnimatedContainer(
+          // Expanded(
+          //       child: Center(
+          //         child: CustomPaint(
+          //           size: const Size(300, 300),
+          //           painter: HeartEmojiPainter(type: selectedEmoji),
+          //         ),
+          //       ),
+          //     ),
+          // wrap custom paint to select and pulse drawing
+          AnimatedScale(
             duration: Duration(milliseconds: 500),
-            width: isAnimated ? 200 : 100, // change height and width depending on if heart is animated
-            height: isAnimated ? 200 : 100,
-            child: // this is what needs to be animated
-            Expanded(
-                child: Center(
-                  child: CustomPaint(
+            scale: isAnimated ? 1.5 : 1.0,
+            child:  
+              CustomPaint(
                     size: const Size(300, 300),
                     painter: HeartEmojiPainter(type: selectedEmoji),
                   ),
-                ),
-              ),
             ),
           // change the state of the heart when button is clicked
           ElevatedButton(
