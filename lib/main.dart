@@ -206,6 +206,10 @@ class ValentineScenePainter extends CustomPainter {
         ..color = const Color(0xFFFF2D8D)
         ..style = PaintingStyle.fill;
 
+      final shinePaint = Paint()
+        ..color = Colors.white.withOpacity(0.35)
+        ..style = PaintingStyle.fill;
+
       for (int i = 0; i < 8; i++) {
         final x = (i + 1) * size.width / 9;
         final phase = (t + i * 0.12) % 1.0;
@@ -218,6 +222,14 @@ class ValentineScenePainter extends CustomPainter {
         );
 
         canvas.drawOval(balloonRect, balloonPaint);
+
+        final shineRect = Rect.fromCenter(
+          center: Offset(x - 8, y - 10),
+          width: 10,
+          height: 18,
+        );
+
+        canvas.drawOval(shineRect, shinePaint);
 
         canvas.drawLine(
           Offset(x, y + 25),
